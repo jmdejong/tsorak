@@ -4,7 +4,6 @@ use crate::{
 	scene::{Scene, ShapeObject},
 	camera::Camera,
 	util::{
-		Vector2,
 		Vector3,
 		Point2
 	}

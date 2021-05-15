@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use crate::brush::Brush;
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ScreenBuffer {
 	width: usize,
 	height: usize,

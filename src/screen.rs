@@ -39,7 +39,7 @@ impl Screen for DebugScreen {
 		io::stdin()
 			.read_line(&mut stra)
 			.expect("failed to read input.");
-		Some(match (stra.chars().next().unwrap()) {
+		Some(match stra.chars().next().unwrap() {
 			'w' => Input::Forward,
 			's' => Input::Back,
 			'a' => Input::TurnLeft,

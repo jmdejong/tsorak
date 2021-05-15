@@ -1,6 +1,6 @@
 
 use cgmath::Matrix2;
-use crate::util::{Point3, Rad, Vector3, Vector2};
+use crate::util::{Point3, Rad, Vector2};
 
 #[derive(Debug, Clone)]
 pub struct Camera {

@@ -8,7 +8,7 @@ use pancurses as curses;
 
 use crate::{
 	screenbuffer::ScreenBuffer,
-	brush::{Style, Color},
+	brush::{Style},
 	input::Input::*,
 	input::Input as GameInput,
 	screen::Screen
