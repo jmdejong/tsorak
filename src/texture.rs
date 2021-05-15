@@ -33,7 +33,7 @@ impl Texture {
 				}
 			}
 			Texture::Image(buffer) => {
-				buffer.getf((u * buffer.width as f32, v * buffer.height as f32))?
+				buffer.getf((u * buffer.width() as f32, v * buffer.height() as f32))?
 			}
 			Texture::Tilemap(buffer, scale) => buffer.getf((u / scale.0, v / scale.1))?
 		})

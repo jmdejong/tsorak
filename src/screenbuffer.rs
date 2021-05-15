@@ -6,8 +6,8 @@ use crate::brush::Brush;
 
 #[derive(Debug, Clone)]
 pub struct ScreenBuffer {
-	pub width: usize,
-	pub height: usize,
+	width: usize,
+	height: usize,
 	cells: Vec<Option<Brush>>
 }
 
@@ -58,6 +58,13 @@ impl ScreenBuffer{
 			}
 		}
 		buffer
+	}
+	
+	pub fn width(&self) -> usize {
+		self.width
+	}
+	pub fn height(&self) -> usize {
+		self.height
 	}
 }
 

@@ -10,18 +10,16 @@ use cgmath::prelude::*;
 #[derive(Debug, Clone)]
 pub enum Shape {
 	Wall(Point3, Point3),
-	HorPlane(f32)
+	Plane(f32)
 }
 
-pub fn wall(p0: (f32, f32, f32), p1: (f32, f32, f32)) -> Shape {
-	Shape::Wall(Point3::from(p0), Point3::from(p1))
-}
 
 #[derive(Debug, Clone)]
 pub struct ShapeObject {
 	texture: Texture,
 	shape: Shape
 }
+
 
 impl ShapeObject {
 
@@ -49,7 +47,7 @@ impl ShapeObject {
 				}
 				Some(Hit { distance: t, brush: self.texture.get(u, v)?})
 			}
-			Shape::HorPlane(height) => {
+			Shape::Plane(height) => {
 				if direction.z == 0.0 {
 					return None
 				}
@@ -64,6 +62,13 @@ impl ShapeObject {
 		}
 	}
 	
+	pub fn moved(&self, d: Vector3) -> Self {
+		let shape = match self.shape {
+			Shape::Plane(height) => Shape::Plane(height),
+			Shape::Wall(p0, p1) => Shape::Wall(p0 + d, p1 + d)
+		};
+		Self { shape, texture: self.texture.clone()}
+	}
 }
 
 #[derive(Debug, Clone)]
@@ -80,11 +85,9 @@ pub struct Scene {
 
 
 impl Scene {
-	pub fn new(shapes: &[(Shape, Texture)]) -> Scene {
+	pub fn new(shapes: &[ShapeObject]) -> Scene {
 		Self {shapes: 
-			shapes.into_iter()
-			.map(|(shape, texture)| ShapeObject::new(shape.clone(), texture.clone()))
-			.collect()
+			shapes.into_iter().cloned().collect()
 		}
 	}
 	
@@ -92,4 +95,13 @@ impl Scene {
 		// todo: spatial partitioning; bounding rects
 		self.shapes.clone()
 	}
+}
+
+
+pub fn wall(p0: (f32, f32, f32), p1: (f32, f32, f32), texture: Texture) -> ShapeObject {
+	ShapeObject::new(Shape::Wall(Point3::from(p0), Point3::from(p1)), texture)
+}
+
+pub fn plane(height: f32, texture: Texture) -> ShapeObject {
+	ShapeObject::new(Shape::Plane(height), texture)
 }
