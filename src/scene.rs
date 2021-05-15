@@ -2,7 +2,8 @@
 
 use crate::{
 	util::{Vector2, Point2, Vector3, Point3},
-	brush::Brush
+	brush::Brush,
+	texture::Texture
 };
 use cgmath::prelude::*;
 
@@ -18,14 +19,14 @@ pub fn wall(p0: (f32, f32, f32), p1: (f32, f32, f32)) -> Shape {
 
 #[derive(Debug, Clone)]
 pub struct ShapeObject {
-	brush: Brush,
+	texture: Texture,
 	shape: Shape
 }
 
 impl ShapeObject {
 
-	pub fn new(shape: Shape, brush: Brush) -> Self {
-		Self {shape, brush }
+	pub fn new(shape: Shape, texture: Texture) -> Self {
+		Self {shape, texture }
 	}
 	
 	pub fn intersect_ray(&self, origin: Point3, mut direction: Vector3) -> Option<Hit> {
@@ -46,7 +47,7 @@ impl ShapeObject {
 				if t <= 0.0 || u < 0.0 || u > 1.0 || v < 0.0 || v > 1.0 {
 					return None;
 				}
-				Some(Hit { distance: t, brush: self.brush})
+				Some(Hit { distance: t, brush: self.texture.get(u, v)?})
 			}
 			Shape::HorPlane(height) => {
 				if direction.z == 0.0 {
@@ -56,7 +57,9 @@ impl ShapeObject {
 				if t <= 0.0 {
 					return None
 				}
-				Some(Hit {distance: t, brush: self.brush})
+				let u = origin.x + t * direction.x;
+				let v = origin.y + t * direction.y;
+				Some(Hit {distance: t, brush: self.texture.get(u, v)?})
 			}
 		}
 	}
@@ -77,10 +80,10 @@ pub struct Scene {
 
 
 impl Scene {
-	pub fn new(shapes: &[(Shape, Brush)]) -> Scene {
+	pub fn new(shapes: &[(Shape, Texture)]) -> Scene {
 		Self {shapes: 
 			shapes.into_iter()
-			.map(|(shape, brush)| ShapeObject::new(shape.clone(), brush.clone()))
+			.map(|(shape, texture)| ShapeObject::new(shape.clone(), texture.clone()))
 			.collect()
 		}
 	}

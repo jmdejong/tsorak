@@ -40,8 +40,8 @@ pub struct Brush {
 	pub style: Style
 }
 
-pub fn brush(ch: char, style: Style) -> Brush {
-	Brush { ch, style}
+pub fn brush(ch: char, fg: u8, bg: u8) -> Brush {
+	Brush {ch, style: Style{fg: Color(fg), bg: Color(bg)}}
 }
 
 impl Default for Brush {

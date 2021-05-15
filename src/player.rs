@@ -7,6 +7,8 @@ pub struct Player {
 	pub dir: i32
 }
 
+const speed: f32 = 0.5;
+
 impl Player {
 	
 	pub fn view_angle(&self) -> Rad {
@@ -27,7 +29,7 @@ impl Player {
 			_ => (0.0, 0.0, 0.0)
 		};
 		let movement : Vector3 = Vector3::new(mx, my, mz);
-		self.pos += (Matrix4::from_angle_z(self.view_angle().to_cgmath_rad()) * movement.extend(1.0)).truncate();
+		self.pos += (Matrix4::from_angle_z(self.view_angle().to_cgmath_rad()) * movement.extend(1.0)).truncate() * speed;
 		self.dir +=  match input {
 			Input::TurnLeft => 1,
 			Input::TurnRight => -1,

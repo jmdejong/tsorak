@@ -30,7 +30,7 @@ pub fn render_raycast(target: &mut ScreenBuffer, scene: &Scene, camera: &Camera)
 						continue;
 					}
 					depth_buffer[y] = hit.distance;
-					target.set((x, y), hit.brush);
+					target.set((x, y), Some(hit.brush));
 				}
 			}
 		}

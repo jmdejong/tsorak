@@ -1,19 +1,20 @@
 
 
-
+use std::collections::HashMap;
 use crate::brush::Brush;
 
 
+#[derive(Debug, Clone)]
 pub struct ScreenBuffer {
 	pub width: usize,
 	pub height: usize,
-	cells: Vec<Brush>
+	cells: Vec<Option<Brush>>
 }
 
 impl ScreenBuffer{
 	pub fn new(width: usize, height: usize) -> ScreenBuffer {
 		let mut cells = Vec::new();
-		cells.resize_with((width * height) as usize, Brush::default);
+		cells.resize((width * height) as usize, None);
 		ScreenBuffer {
 			width,
 			height,
@@ -21,24 +22,42 @@ impl ScreenBuffer{
 		}
 	}
 	
-	pub fn get_cell(&self, (x, y): (usize, usize)) -> Brush {
+	pub fn get(&self, (x, y): (usize, usize)) -> Option<Brush> {
 		self.cells[(x + y * self.width) as usize]
 	}
 	
-	pub fn clear(&mut self) {
-		self.cells.clear();
-		self.cells.resize_with((self.width * self.height) as usize, Brush::default);
+	pub fn getf(&self, (x, y): (f32, f32)) -> Option<Brush> {
+		self.get((
+			(x.max(0.0) as usize).min(self.width - 1),
+			(y.max(0.0) as usize).min(self.height - 1)
+		))
 	}
 	
-	pub fn set(&mut self, (x, y): (usize, usize), brush: Brush){
+	pub fn fill(&mut self, brush: Option<Brush>){
+		self.cells.clear();
+		self.cells.resize((self.width * self.height) as usize, brush);
+	}
+	
+	pub fn set(&mut self, (x, y): (usize, usize), brush: Option<Brush>){
 		let i = (x + y * self.width) as usize;
 		self.cells[i] = brush;
 	}
 	
 	pub fn to_lines(&self) -> Vec<String>{
 		(0..self.height).map(|y| {
-			(0..self.width).map(|x| self.get_cell((x, y)).ch).collect::<String>()
+			(0..self.width).map(|x| self.get((x, y)).map(|cell| cell.ch).unwrap_or(' ')).collect::<String>()
 		}).collect()
+	}
+	
+	pub fn from_lines(width: usize, height: usize, lines: &[&str], mapping: &HashMap<char, Brush>) -> ScreenBuffer {
+		let mut buffer = ScreenBuffer::new(width, height);
+		for (y, line) in lines.iter().take(height).enumerate() {
+			for (x, ch) in line.chars().take(width).enumerate() {
+				let brush : Option<Brush> = mapping.get(&ch).cloned();
+				buffer.set((x, y), brush);
+			}
+		}
+		buffer
 	}
 }
 

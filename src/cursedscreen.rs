@@ -37,9 +37,15 @@ impl Colors {
 		if self.ncolors == 16 {
 			curses::COLOR_PAIR(fg + bg * self.ncolors as u32)
 		} else if self.ncolors == 8 {
-			let dfg = fg % 8;
-			let dbg = bg % 8;
-			curses::COLOR_PAIR(dfg + bg * self.ncolors as u32)
+			let mut dfg = fg % 8;
+			let mut dbg = bg % 8;
+			if bg == 8 {
+				dbg = 7
+			}
+			if fg == 8 {
+				dfg = 7
+			}
+			curses::COLOR_PAIR(dfg + dbg * self.ncolors as u32)
 		} else {
 			curses::COLOR_PAIR(0)
 		}
@@ -95,9 +101,10 @@ impl Screen for CursedScreen {
 		for y in 0..height {
 			self.screen.mv((y + dest_y) as i32, dest_x as i32);
 			for x in 0..width {
-				let cell = buffer.get_cell((x + src_x, y + src_y ));
-				self.screen.attrset(self.colors.get(cell.style));
-				self.screen.addch(cell.ch);
+				if let Some(cell) = buffer.get((x + src_x, y + src_y )){
+					self.screen.attrset(self.colors.get(cell.style));
+					self.screen.addch(cell.ch);
+				}
 			}
 		}
 	}
