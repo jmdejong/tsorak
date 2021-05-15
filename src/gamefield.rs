@@ -62,7 +62,7 @@ impl GameField {
 						self.add_wall(&mut shapes, xy, *height, (0,0), (1,0), (0,-1), &tex1);
 						self.add_wall(&mut shapes, xy, *height, (1,0), (1,1), (1,0), &tex2);
 						self.add_wall(&mut shapes, xy, *height, (1,1), (0,1), (0,1), &tex1);
-						self.add_wall(&mut shapes, xy, *height, (0,1), (0,0), (-1,0), &tex1);
+						self.add_wall(&mut shapes, xy, *height, (0,1), (0,0), (-1,0), &tex2);
 // 						wall((x,     y,     0.0), (x+1.0, y,     height), tex1),
 // 						wall((x+1.0, y,     0.0), (x+1.0, y+1.0, height), tex2),
 // 						wall((x+1.0, y+1.0, 0.0), (x,     y+1.0, height), tex1),

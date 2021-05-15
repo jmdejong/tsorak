@@ -97,6 +97,35 @@ fn build_field() -> GameField {
 		"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
 	];
 	
+	let tex = [
+		"########",
+		"########",
+		"########",
+		"########",
+		"#+++####",
+		"########",
+		"########",
+		"########",
+		"########",
+		"+####+++",
+		"########",
+		"########",
+		"########",
+		"########",
+		"########",
+		"###++++#",
+		"########",
+		"########",
+		"########",
+		"########",
+		"++##+##+",
+		"########",
+		"########",
+		"########",
+		"########"
+	];
+	
+	
 	let mapping = hashmap!{
 		',' => GameTile{floor: Some(brush(';', 2, 0)), shape: TileShape::Open, ceiling: None, accessible: true},
 		'.' => GameTile{floor: Some(brush(':', 3, 0)), shape: TileShape::Open, ceiling: None, accessible: true},
@@ -107,8 +136,8 @@ fn build_field() -> GameField {
 			accessible: false,
 			shape: TileShape::Block {
 				height: 3.0,
-				tex1: Texture::Flat(brush('#', 7, 8)),
-				tex2: Texture::Flat(brush('#', 8, 7))
+				tex1: Texture::Image(ScreenBuffer::from_lines(8, 24, &tex, &hashmap!('#' => brush('#', 7, 8), '+'=> brush('#', 8, 7)))),
+				tex2: Texture::Image(ScreenBuffer::from_lines(8, 24, &tex, &hashmap!('#' => brush('#', 8, 7), '+'=> brush('#', 7, 8))))
 			}
 		}
 	};
