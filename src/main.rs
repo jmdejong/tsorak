@@ -31,8 +31,9 @@ use gamefield::{GameField, GameTile, TileShape};
 
 fn main() {
 	let screen = CursedScreen::create();
-	let (w, h) = screen.get_size();
-	let mut buffer = ScreenBuffer::new(w as usize, h as usize);
+	let w = screen.width().min(120);
+	let h = screen.height().min(32);
+	let mut buffer = ScreenBuffer::new(w, h);
 	
 	let ratio = w as f32 / 2.0 / h as f32;
 	let vert_fov_deg: f32 = 75.0;
@@ -48,7 +49,7 @@ fn main() {
 		camera.move_view(player.pos, player.view_angle());
 		buffer.fill(Some(brush(' ', 0, 0)));
 		rtrender::render_raycast(&mut buffer, &scene, &camera);
-		screen.write_screen_buffer(&buffer, (0, 0), (0, 0), screen.get_size());
+		screen.write_screen_buffer(&buffer, (0, 0), (0, 0), (w,h));
 		input = screen.await_keyboard_input().unwrap();
 	}
 	
@@ -121,8 +122,7 @@ fn build_field() -> GameField {
 		"++##+##+",
 		"########",
 		"########",
-		"########",
-		"########"
+		"###++###"
 	];
 	
 	
@@ -136,8 +136,8 @@ fn build_field() -> GameField {
 			accessible: false,
 			shape: TileShape::Block {
 				height: 3.0,
-				tex1: Texture::Image(ScreenBuffer::from_lines(8, 24, &tex, &hashmap!('#' => brush('#', 7, 8), '+'=> brush('#', 8, 7)))),
-				tex2: Texture::Image(ScreenBuffer::from_lines(8, 24, &tex, &hashmap!('#' => brush('#', 8, 7), '+'=> brush('#', 7, 8))))
+				tex1: Texture::Image(ScreenBuffer::from_lines(8, 24, &tex, &hashmap!('#' => brush('#', 7, 8), '+'=> brush('+', 0, 8)))),
+				tex2: Texture::Image(ScreenBuffer::from_lines(8, 24, &tex, &hashmap!('#' => brush('#', 8, 7), '+'=> brush('+', 7, 8))))
 			}
 		}
 	};

@@ -99,7 +99,7 @@ impl Screen for CursedScreen {
 	
 	fn write_screen_buffer(&self, buffer: &ScreenBuffer, (dest_x, dest_y): (usize, usize), (src_x, src_y): (usize, usize), (width, height): (usize, usize)){
 		for y in 0..height {
-			self.screen.mv((y + dest_y) as i32, dest_x as i32);
+			self.screen.mv((height - 1  - (y + dest_y)) as i32, dest_x as i32);
 			for x in 0..width {
 				if let Some(cell) = buffer.get((x + src_x, y + src_y )){
 					self.screen.attrset(self.colors.get(cell.style));
@@ -109,8 +109,11 @@ impl Screen for CursedScreen {
 		}
 	}
 	
-	fn get_size(&self) -> (usize, usize) {
-		(self.width as usize, self.height as usize)
+	fn width(&self) -> usize {
+		self.width as usize
+	}
+	fn height(&self) -> usize {
+		self.height as usize
 	}
 	
 	fn await_keyboard_input(&self) -> Option<GameInput>{

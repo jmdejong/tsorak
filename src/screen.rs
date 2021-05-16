@@ -12,9 +12,10 @@ pub trait Screen {
 	
 	fn write_screen_buffer(&self, buffer: &ScreenBuffer, dest_pos: (usize, usize), src_pos: (usize, usize), size: (usize, usize));
 	
-	fn get_size(&self) -> (usize, usize);
-	
 	fn await_keyboard_input(&self) -> Option<Input>;
+	
+	fn width(&self) -> usize;
+	fn height(&self) -> usize;
 	
 }
 
@@ -28,8 +29,11 @@ impl Screen for DebugScreen {
 		println!("{}", buffer.to_lines().join("|\n"));
 	}
 	
-	fn get_size(&self) -> (usize, usize) {
-		(self.0, self.1)
+	fn width(&self) -> usize {
+		self.0
+	}
+	fn height(&self) -> usize {
+		self.1
 	}
 		
 	

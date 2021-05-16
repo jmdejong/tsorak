@@ -41,7 +41,8 @@ impl ShapeObject {
 				let u_part = direction.x * (origin.y - p0.y) - direction.y * (origin.x - p0.x);
 				let t = t_part / d;
 				let u = u_part / d;
-				let v = (origin.z - p0.z + t * direction.z) / dir.z;
+				let hit_z = origin.z + t * direction.z;
+				let v = (hit_z - p0.z) / dir.z;
 				if t <= 0.0 || u < 0.0 || u > 1.0 || v < 0.0 || v > 1.0 {
 					return None;
 				}
@@ -51,7 +52,7 @@ impl ShapeObject {
 				if direction.z == 0.0 {
 					return None
 				}
-				let t = (origin.z - height) / direction.z;
+				let t = -(origin.z - height) / direction.z;
 				if t <= 0.0 {
 					return None
 				}
