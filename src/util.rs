@@ -7,6 +7,7 @@ use cgmath::{
 	Point2 as Point2_,
 	Point3 as Point3_,
 	Matrix4 as Matrix4_,
+	Matrix2 as Matrix2_,
 	Rad as Rad_
 };
 
@@ -16,6 +17,7 @@ pub type Vector3 = Vector3_<f32>;
 pub type Point2 = Point2_<f32>;
 pub type Point3 = Point3_<f32>;
 pub type Matrix4 = Matrix4_<f32>;
+pub type Matrix2 = Matrix2_<f32>;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Rad(pub f32);
@@ -30,6 +32,7 @@ impl Rad {
 		self.0.cos()
 	}
 }
+
 
 
 #[macro_export]

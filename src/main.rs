@@ -31,8 +31,8 @@ use gamefield::{GameField, GameTile, TileShape};
 
 fn main() {
 	let screen = CursedScreen::create();
-	let w = screen.width().min(120);
-	let h = screen.height().min(32);
+	let w = screen.width();
+	let h = screen.height();
 	let mut buffer = ScreenBuffer::new(w, h);
 	
 	let ratio = w as f32 / 2.0 / h as f32;

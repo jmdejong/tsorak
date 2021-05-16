@@ -51,7 +51,7 @@ impl GameField {
 	}
 	
 	pub fn to_scene(&self) -> Scene {
-		let mut shapes = vec![plane(-0.5, Texture::Flat(brush('~', 4, 0)))];
+		let mut shapes = vec![];
 		let mut floor_buf = ScreenBuffer::new(self.tiles.width(), self.tiles.height());
 		for (xy, typ) in self.tiles.iter_cells(){
 			if let Some(val) = self.mapping.get(typ){
@@ -74,8 +74,13 @@ impl GameField {
 // 				}
 			}
 		}
-		shapes.push(plane(0.0, Texture::Tilemap(floor_buf, (1.0, 1.0))));
-		Scene::new(&shapes)
+		Scene::new(
+			&[
+				plane(-0.5, Texture::Flat(brush('~', 4, 0))),
+				plane(0.0, Texture::Tilemap(floor_buf, (1.0, 1.0)))
+			],
+			&shapes
+		)
 // 			(Shape::HorPlane(-0.5), Texture::Flat(brush('~', 4, 0))),
 // 			(Shape::HorPlane(0.0), Texture::Tilemap(floor_buf, (2.0, 2.0))),
 // 		])

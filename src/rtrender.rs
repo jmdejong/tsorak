@@ -1,7 +1,7 @@
 
 use crate::{
 	screenbuffer::ScreenBuffer,
-	scene::{Scene, ShapeObject},
+	scene::{Scene, ShapeObject, Column, Hit},
 	camera::Camera,
 	util::{
 		Vector3,
@@ -15,22 +15,22 @@ pub fn render_raycast(target: &mut ScreenBuffer, scene: &Scene, camera: &Camera)
 
 	let mut depth_buffer: Vec<f32> = Vec::new();
 	for (x, direction2d) in camera.calculate_hor_rays(target.width()).into_iter().enumerate() {
-		let shapes: Vec<ShapeObject> = scene.shapes_on_ray2d(Point2::new(camera.position.x, camera.position.y), direction2d);
-		depth_buffer.clear();
-		depth_buffer.resize(target.height(), f32::INFINITY);
-		for shape in shapes {
-// 			println!("{:?} {:?}", direction2d, shape);
-			// todo: don't cast all rays for short objects
-			for (y, angle_vert) in camera.calculate_vert_angles(target.height()).into_iter().enumerate() {
-				let direction : Vector3 = direction2d.extend(angle_vert);
-				if let Some(hit) = shape.intersect_ray(camera.position, direction){
-// 					println!("hit: {:?}", hit);
-					if hit.distance > depth_buffer[y] {
-						continue;
+		let columns: Vec<Column> = scene.shapes_on_ray2d(Point2::new(camera.position.x, camera.position.y), direction2d);
+		for (y, angle_vert) in camera.calculate_vert_angles(target.height()).into_iter().enumerate() {
+			let mut possible_hit = scene.plane_intersections(camera.position, direction2d.extend(angle_vert));
+			
+			for column in columns.iter() {
+				if let Some(Hit{distance, ..}) = possible_hit {
+					if column.t > distance {
+						break;
 					}
-					depth_buffer[y] = hit.distance;
-					target.set((x, y), Some(hit.brush));
 				}
+				if let Some(brush) = column.get_hit(camera.position.z, angle_vert) {
+					possible_hit = Some(Hit{distance: column.t, brush});
+				}
+			}
+			if let Some(hit) = possible_hit {
+				target.set((x, y), Some(hit.brush));
 			}
 		}
 	}
