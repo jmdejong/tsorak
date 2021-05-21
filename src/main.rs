@@ -19,7 +19,7 @@ use util::{Point3};
 use player::Player;
 use screenbuffer::ScreenBuffer;
 use cursedscreen::CursedScreen;
-use brush::{brush};
+use brush::{brush, style, Brush};
 use camera::Camera;
 use input::Input;
 use screen::{Screen, DebugScreen};
@@ -148,7 +148,10 @@ fn build_field() -> GameField {
 			shape: TileShape::Block {
 				height: 3.0,
 				tex1: Texture::Image(ScreenBuffer::from_lines(8, 24, &tex, &hashmap!('#' => brush('#', 7, 8), '+'=> brush('+', 0, 8)))),
-				tex2: Texture::Image(ScreenBuffer::from_lines(8, 24, &tex, &hashmap!('#' => brush('#', 8, 7), '+'=> brush('+', 7, 8))))
+				tex2: Texture::Image(ScreenBuffer::from_lines(8, 24, &tex, &hashmap!(
+					'#' => Brush{ch: '#', style: style(8, 7), backupstyle: style(0, 7)},
+					'+'=> brush('+', 7, 8)
+				)))
 			}
 		},
 		'o' => GameTile{
