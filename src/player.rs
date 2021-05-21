@@ -25,10 +25,10 @@ impl Player {
 	
 	pub fn domove(&mut self, input: Input, field: &GameField){
 		let (mx, my, mz) = match input {
-			Input::Forward => (0.0, 1.0, 0.0),
-			Input::MoveLeft => (-1.0, 0.0, 0.0),
-			Input::Back => (0.0, -1.0, 0.0),
-			Input::MoveRight => (1.0, 0.0, 0.0),
+			Input::Forward => (1.0, 0.0, 0.0),
+			Input::MoveLeft => (0.0, -1.0, 0.0),
+			Input::Back => (-1.0, 0.0, 0.0),
+			Input::MoveRight => (0.0, 1.0, 0.0),
 			_ => (0.0, 0.0, 0.0)
 		};
 		let movement : Vector3 = Vector3::new(mx, my, mz);
@@ -41,8 +41,8 @@ impl Player {
 			self.pos.y = p.y
 		}
 		self.dir +=  match input {
-			Input::TurnLeft => 1,
-			Input::TurnRight => -1,
+			Input::TurnLeft => -1,
+			Input::TurnRight => 1,
 			_ => 0
 		};
 	}

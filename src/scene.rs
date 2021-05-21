@@ -16,7 +16,7 @@ pub struct Plane {
 
 impl Plane {
 	
-	pub fn intersect_ray(&self, origin: Point3, mut direction: Vector3) -> Option<Hit> {
+	pub fn intersect_ray(&self, origin: Point3, direction: Vector3) -> Option<Hit> {
 		if direction.z == 0.0 {
 			return None
 		}
@@ -52,8 +52,7 @@ impl ShapeObject {
 		Self {shape, texture }
 	}
 	
-	pub fn intersect_ray2d(&self, origin: Point2, mut direction: Vector2) -> Option<Column> {
-		let mat = Matrix2::look_at_stable(direction, false);
+	pub fn intersect_ray2d(&self, origin: Point2, direction: Vector2, rot: &Matrix2) -> Option<Column> {
 		match self.shape {
 			Shape::Wall(p0, p1) => {
 				let dir = p1 - p0;
@@ -86,49 +85,22 @@ impl ShapeObject {
 // 				}
 // 			}
 			Shape::Sprite(pos, (width, height)) => {
-				None
+				let p = rot.invert().unwrap() * Vector2::new(pos.x - origin.x, pos.y - origin.y);
+				let t = p.x;
+				let this = rot.invert().unwrap() *  direction * t;
+				let u = (this.y - p.y)  / width + 0.5;
+				if t <= 0.0 || u < 0.0 || u > 1.0 {
+					None
+				} else {
+					Some(Column{tex: &self.texture, t, u, bottom: pos.z, top: pos.z + height})
+				}
 			}
 		}
 	}
 	
-// 	pub fn intersect_ray(&self, origin: Point3, mut direction: Vector3) -> Option<Hit> {
-// 		direction = direction.normalize();
-// 		let ray_end = origin + direction;
-// 		match self.shape {
-// 			Shape::Wall(p0, p1) => {
-// 				let dir = p1 - p0;
-// 				let d = direction.x * dir.y - direction.y * dir.x;
-// 				if d == 0.0 {
-// 					return None;
-// 				}
-// 				let t_part = (origin.x - p0.x) * (-dir.y) - (origin.y - p0.y) * (-dir.x);
-// 				let u_part = direction.x * (origin.y - p0.y) - direction.y * (origin.x - p0.x);
-// 				let t = t_part / d;
-// 				let u = u_part / d;
-// 				let hit_z = origin.z + t * direction.z;
-// 				let v = (hit_z - p0.z) / dir.z;
-// 				if t <= 0.0 || u < 0.0 || u > 1.0 || v < 0.0 || v > 1.0 {
-// 					return None;
-// 				}
-// 				Some(Hit { distance: t, brush: self.texture.get(u, v)?})
-// 			}
-// 			Shape::Sprite(pos, (width, height)) => {
-// 				None
-// 			}
-// // 				let direction2 = direction.truncate().normalize();
-// // 				let diff = pos - origin;
-// // 				let d_u = direction2.x * diff.y + direction2.y * diff.x;
-// // 				let u = (d_u + 0.5) / width;
-// // 				if u < 0.0 || y > 1.5 {
-// // 					return None;
-// // 				}
-// // 			}
-// 		}
-// 	}
 	
 	pub fn moved(&self, d: Vector3) -> Self {
 		let shape = match self.shape {
-// 			Shape::Plane(height) => Shape::Plane(height),
 			Shape::Wall(p0, p1) => Shape::Wall(p0 + d, p1 + d),
 			Shape::Sprite(pos, size) => Shape::Sprite(pos + d, size)
 		};
@@ -188,10 +160,10 @@ impl Scene {
 			.min_by(|a, b| a.distance.partial_cmp(&b.distance).unwrap())
 	}
 	
-	pub fn shapes_on_ray2d(&self, origin: Point2, direction: Vector2) -> Vec<Column> {
+	pub fn shapes_on_ray2d(&self, origin: Point2, direction: Vector2, rot: &Matrix2) -> Vec<Column> {
 		// todo: spatial partitioning; bounding rects
 		let mut columns: Vec<Column> = self.shapes.iter()
-			.filter_map(|shape| shape.intersect_ray2d(origin, direction))
+			.filter_map(|shape| shape.intersect_ray2d(origin, direction, rot))
 			.filter(|column| column.top > column.bottom)
 			.collect();
 		columns.sort_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
@@ -202,6 +174,9 @@ impl Scene {
 
 pub fn wall(p0: (f32, f32, f32), p1: (f32, f32, f32), texture: Texture) -> ShapeObject {
 	ShapeObject::new(Shape::Wall(Point3::from(p0), Point3::from(p1)), texture)
+}
+pub fn sprite(pos: (f32, f32, f32), width: f32, height: f32, texture: Texture) -> ShapeObject {
+	ShapeObject::new(Shape::Sprite(Point3::from(pos), (width, height)), texture)
 }
 
 pub fn plane(height: f32, texture: Texture) -> Plane {

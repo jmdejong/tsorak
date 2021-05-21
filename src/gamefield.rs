@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use crate::{
 	brush::{Brush, brush},
-	scene::{Scene, ShapeObject, plane, wall},
+	scene::{Scene, ShapeObject, plane, wall, sprite},
 	texture::Texture,
 	screenbuffer::ScreenBuffer,
 	grid::Grid
@@ -21,7 +21,7 @@ pub struct GameTile {
 pub enum TileShape {
 	Open,
 	Block{height: f32, tex1: Texture, tex2: Texture},
-// 	Sprite{tex: Texture, height: f32, width: f32}
+	Sprite{width: f32, height: f32, tex: Texture}
 }
 
 
@@ -59,19 +59,20 @@ impl GameField {
 				match &val.shape {
 					TileShape::Open => (),
 					TileShape::Block{height, tex1, tex2} => {
-						self.add_wall(&mut shapes, xy, *height, (0,0), (1,0), (0,-1), &tex1);
-						self.add_wall(&mut shapes, xy, *height, (1,0), (1,1), (1,0), &tex2);
-						self.add_wall(&mut shapes, xy, *height, (1,1), (0,1), (0,1), &tex1);
-						self.add_wall(&mut shapes, xy, *height, (0,1), (0,0), (-1,0), &tex2);
-// 						wall((x,     y,     0.0), (x+1.0, y,     height), tex1),
-// 						wall((x+1.0, y,     0.0), (x+1.0, y+1.0, height), tex2),
-// 						wall((x+1.0, y+1.0, 0.0), (x,     y+1.0, height), tex1),
-// 						wall((x,     y+1.0, 0.0), (x,     y,     height), tex2)
+						self.add_wall(&mut shapes, xy, *height, (0,0), (1,0), ( 0,-1), &tex1);
+						self.add_wall(&mut shapes, xy, *height, (1,0), (1,1), ( 1, 0), &tex2);
+						self.add_wall(&mut shapes, xy, *height, (1,1), (0,1), ( 0, 1), &tex1);
+						self.add_wall(&mut shapes, xy, *height, (0,1), (0,0), (-1, 0), &tex2);
+					}
+					TileShape::Sprite{width, height, tex} => {
+						shapes.push(sprite(
+							(xy.0 as f32 + 0.5, xy.1 as f32 + 0.5, 0.0),
+							*width,
+							*height,
+							tex.clone()
+						));
 					}
 				}
-// 				for shape in val.shapes.iter() {
-// 					shapes.push(shape.moved(Vector3::new(x as f32, y as f32, 0.0)));
-// 				}
 			}
 		}
 		Scene::new(
@@ -81,9 +82,6 @@ impl GameField {
 			],
 			&shapes
 		)
-// 			(Shape::HorPlane(-0.5), Texture::Flat(brush('~', 4, 0))),
-// 			(Shape::HorPlane(0.0), Texture::Tilemap(floor_buf, (2.0, 2.0))),
-// 		])
 	}
 	
 	pub fn is_accessible(&self, x: usize, y: usize) -> bool{

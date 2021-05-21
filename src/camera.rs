@@ -17,11 +17,11 @@ impl Camera {
 	}
 
 	pub fn calculate_hor_rays(&self, screen_width: usize) -> Vec<Vector2> {
-		let m = Matrix2::from_angle(self.dir.to_cgmath_rad());
+		let m = self.rotation();
 		(0..screen_width)
 			.map(|col| {
 				let x = (col as f32 / screen_width as f32 * 2.0 - 1.0) * self.hor_side;
-				m * Vector2::new(x, 1.0)
+				m * Vector2::new(1.0, x)
 			})
 			.collect()
 	}
@@ -39,4 +39,9 @@ impl Camera {
 		self.position = position;
 		self.dir = dir;
 	}
+	
+	pub fn rotation(&self) -> Matrix2<f32> {
+		Matrix2::from_angle(self.dir.to_cgmath_rad())
+	}
+	
 }

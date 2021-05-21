@@ -14,8 +14,9 @@ use crate::{
 pub fn render_raycast(target: &mut ScreenBuffer, scene: &Scene, camera: &Camera){
 
 	let mut depth_buffer: Vec<f32> = Vec::new();
+	let rot = camera.rotation();
 	for (x, direction2d) in camera.calculate_hor_rays(target.width()).into_iter().enumerate() {
-		let columns: Vec<Column> = scene.shapes_on_ray2d(Point2::new(camera.position.x, camera.position.y), direction2d);
+		let columns: Vec<Column> = scene.shapes_on_ray2d(Point2::new(camera.position.x, camera.position.y), direction2d, &rot);
 		for (y, angle_vert) in camera.calculate_vert_angles(target.height()).into_iter().enumerate() {
 			let mut possible_hit = scene.plane_intersections(camera.position, direction2d.extend(angle_vert));
 			

@@ -26,7 +26,9 @@ impl Screen for DebugScreen {
 	fn update_size(&mut self) {}
 	
 	fn write_screen_buffer(&self, buffer: &ScreenBuffer, (dest_x, dest_y): (usize, usize), (src_x, src_y): (usize, usize), (width, height): (usize, usize)){
-		println!("{}", buffer.to_lines().join("|\n"));
+		let mut lines = buffer.to_lines();
+		lines.reverse();
+		println!("{}", lines.join("|\n"));
 	}
 	
 	fn width(&self) -> usize {
